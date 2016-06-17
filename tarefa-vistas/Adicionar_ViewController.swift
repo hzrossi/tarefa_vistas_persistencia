@@ -17,7 +17,6 @@ class Adicionar_ViewController: UIViewController {
 	@IBOutlet weak var txtISBN: UITextField!
 	@IBOutlet weak var imgCapa: UIImageView!
 	@IBOutlet weak var txtDados: UITextView!
-	@IBOutlet weak var btnAdicionar: UIButton!
 
 	var tituloLivro:String!
 	var capaLivro:UIImage!
@@ -34,7 +33,6 @@ class Adicionar_ViewController: UIViewController {
 		self.txtISBN.resignFirstResponder()
 		self.imgCapa.hidden = true
 		self.txtDados.hidden = true
-		self.btnAdicionar.hidden = true
 		self.txtDados.text = ""
 		self.imgCapa.image = UIImage()
     }
@@ -157,22 +155,18 @@ class Adicionar_ViewController: UIViewController {
 						self.imgCapa.image = imagem
 						self.capaLivro = imagem
 					}
-					self.btnAdicionar.hidden = false
+					adicionar()
 				}
 			}
 			catch _ {
-				//print("não foi possível converter o resultado")
+				print("não foi possível converter o resultado")
 			}
 		}
 	}
 
 	//adiciona o livro atual à lista
-	@IBAction func adicionar() {
+	func adicionar() {
 		livros.append(Livro(Titulo: tituloLivro, Autores: autoresLivro, Capa: capaLivro))
-		self.btnAdicionar.hidden = true
-		self.imgCapa.hidden = true
-		self.txtDados.hidden = true
-		self.txtISBN.text = ""
 		//print(livros)
 	}
 

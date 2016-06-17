@@ -93,13 +93,6 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W6D-hD-oil">
-                                <rect key="frame" x="268" y="335" width="65" height="30"/>
-                                <state key="normal" title="Adicionar"/>
-                                <connections>
-                                    <action selector="adicionar" destination="VP7-3b-xjp" eventType="touchUpInside" id="g7B-rv-cus"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -113,13 +106,10 @@
                             <constraint firstItem="LGh-fG-0Sb" firstAttribute="leading" secondItem="TAu-4O-1tk" secondAttribute="leadingMargin" constant="20" id="cbd-XU-jxs"/>
                             <constraint firstAttribute="trailingMargin" secondItem="xt1-Go-5Av" secondAttribute="trailing" constant="25" id="eC1-01-KG9"/>
                             <constraint firstItem="Q1s-yb-4X3" firstAttribute="top" secondItem="xt1-Go-5Av" secondAttribute="bottom" constant="25" id="f6X-Xl-f2C"/>
-                            <constraint firstItem="W6D-hD-oil" firstAttribute="centerX" secondItem="TAu-4O-1tk" secondAttribute="centerX" id="gbj-vh-q4M"/>
-                            <constraint firstItem="W6D-hD-oil" firstAttribute="top" secondItem="DdN-dH-vx9" secondAttribute="bottom" constant="20" id="idM-2e-2Hr"/>
                             <constraint firstItem="xt1-Go-5Av" firstAttribute="leading" secondItem="TAu-4O-1tk" secondAttribute="leadingMargin" constant="25" id="j23-Lk-NeZ"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="btnAdicionar" destination="W6D-hD-oil" id="qKg-aP-fg1"/>
                         <outlet property="imgCapa" destination="Q1s-yb-4X3" id="jcK-hl-rpO"/>
                         <outlet property="txtDados" destination="DdN-dH-vx9" id="kzt-d0-pIn"/>
                         <outlet property="txtISBN" destination="xt1-Go-5Av" id="K8Y-bC-UcH"/>
