@@ -155,19 +155,14 @@ class Adicionar_ViewController: UIViewController {
 						self.imgCapa.image = imagem
 						self.capaLivro = imagem
 					}
-					adicionar()
+					livros.append(Livro(Titulo: tituloLivro, Autores: autoresLivro, Capa: capaLivro)) //adiciona o livro atual à lista
+					//print(livros)
 				}
 			}
 			catch _ {
 				print("não foi possível converter o resultado")
 			}
 		}
-	}
-
-	//adiciona o livro atual à lista
-	func adicionar() {
-		livros.append(Livro(Titulo: tituloLivro, Autores: autoresLivro, Capa: capaLivro))
-		//print(livros)
 	}
 
 	override func viewWillDisappear(animated: Bool) {
