@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 protocol Adicionar_ViewDelegate {
 	func setLivros(livros:[Livro])
@@ -20,10 +21,11 @@ class Adicionar_ViewController: UIViewController {
 
 	var tituloLivro:String!
 	var capaLivro:UIImage!
-	var autoresLivro:[String] = []
+	var autoresLivro:String!
 	var livro:Livro!
 	var livros:[Livro] = []
-
+	var contexto:NSManagedObjectContext? = nil
+	
 	var delegate:Adicionar_ViewDelegate! = nil
 
     override func viewDidLoad() {
@@ -35,6 +37,8 @@ class Adicionar_ViewController: UIViewController {
 		self.txtDados.hidden = true
 		self.txtDados.text = ""
 		self.imgCapa.image = UIImage()
+
+		self.contexto = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
     }
 
     override func didReceiveMemoryWarning() {
@@ -53,8 +57,30 @@ class Adicionar_ViewController: UIViewController {
 			self.presentViewController(alerta, animated: true, completion: nil)
 		}
 		else {
-			//esconde teclado
-			buscaSincrona(txtISBN.text!)
+			let secaoEntidade = NSEntityDescription.entityForName("Secao", inManagedObjectContext: self.contexto!)
+			let peticao = secaoEntidade?.managedObjectModel.fetchRequestFromTemplateWithName("petSecao", substitutionVariables: ["isbn" : txtISBN.text!])
+			do {
+				let secaoEntidade2 = try self.contexto?.executeFetchRequest(peticao!)
+
+				//se encontrou valor aramzenado, não faz busca e mostra os dados ou aviso
+				if (secaoEntidade2?.count > 0) {
+					//cria o alerta
+					let alerta = UIAlertController(title: "Aviso!", message: "O livro já foi adicionado!", preferredStyle: UIAlertControllerStyle.Alert)
+					alerta.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil))
+
+					//mostra o alerta
+					self.presentViewController(alerta, animated: true, completion: nil)
+					self.txtDados.hidden = true
+					self.imgCapa.hidden = true
+				}
+				//senão realiza a busca
+				else {
+					buscaSincrona(txtISBN.text!)
+				}
+			}
+			catch _ {
+
+			}
 		}
 	}
 
@@ -63,6 +89,8 @@ class Adicionar_ViewController: UIViewController {
 		let urls = "https://openlibrary.org/api/books?jscmd=data&format=json&bibkeys=" + isbnBusca
 		let url = NSURL(string: urls)
 		let dados:NSData? = NSData(contentsOfURL: url!)
+		let novaSecaoEntidade = NSEntityDescription.insertNewObjectForEntityForName("Secao", inManagedObjectContext: self.contexto!)
+		let novoLivroEntidade = NSEntityDescription.insertNewObjectForEntityForName("Livro", inManagedObjectContext: self.contexto!)
 
 		// se resultado nulo, está sem internet
 		if (dados == nil) {
@@ -97,7 +125,7 @@ class Adicionar_ViewController: UIViewController {
 				//senão encontrou um livro
 				else {
 					self.tituloLivro = ""
-					self.autoresLivro = []
+					self.autoresLivro = ""
 					self.capaLivro = UIImage()
 					//print("encontrei")
 
@@ -110,13 +138,18 @@ class Adicionar_ViewController: UIViewController {
 
 					//autor
 					let autores = livro["authors"] as! NSArray
-					self.txtDados.text = self.txtDados.text + "Autor(es):\n"
+					self.txtDados.text = self.txtDados.text + "Autor(es): "
 					for i in 0 ..< autores.count {
 						let nome = autores[i]["name"] as! NSString as String
 						//print(nome)
-						self.txtDados.text = self.txtDados.text + "\t" + nome + "\n"
-						self.autoresLivro.append(nome)
+						if (i == (autores.count - 1)) {
+							self.autoresLivro = self.autoresLivro + nome
+						}
+						else {
+							self.autoresLivro = self.autoresLivro + nome + ", "
+						}
 					}
+					self.txtDados.text = self.txtDados.text + self.autoresLivro
 					self.txtDados.hidden = false
 
 					//capa
@@ -141,9 +174,9 @@ class Adicionar_ViewController: UIViewController {
 
 							//mostra o alerta
 							self.presentViewController(alerta, animated: true, completion: nil)
-
 							self.imgCapa.hidden = false
 							let imagem:UIImage = UIImage(named: "SemCapa")!
+
 							self.imgCapa.image = imagem
 							self.capaLivro = imagem
 						}
@@ -155,7 +188,18 @@ class Adicionar_ViewController: UIViewController {
 						self.imgCapa.image = imagem
 						self.capaLivro = imagem
 					}
-					livros.append(Livro(Titulo: tituloLivro, Autores: autoresLivro, Capa: capaLivro)) //adiciona o livro atual à lista
+					novaSecaoEntidade.setValue(txtISBN.text!, forKey: "isbn")
+					novoLivroEntidade.setValue(self.tituloLivro, forKey: "titulo")
+					novoLivroEntidade.setValue(self.autoresLivro, forKey: "autores")
+					novoLivroEntidade.setValue(UIImagePNGRepresentation(self.capaLivro), forKey: "capa")
+					novaSecaoEntidade.setValue(novoLivroEntidade, forKey: "tem")
+					do {
+						try self.contexto?.save()
+					}
+					catch _ {
+
+					}
+					livros.append(Livro(Titulo: self.tituloLivro, Autores: self.autoresLivro, Capa: self.capaLivro)) //adiciona o livro atual à lista
 					//print(livros)
 				}
 			}
@@ -164,6 +208,19 @@ class Adicionar_ViewController: UIViewController {
 			}
 		}
 	}
+
+	/*func criarLivroEntidade(livro:Livro) -> Set<Object> {
+		var entidade = Set<NSObject>()
+		let livroEntidade = NSEntityDescription.insertNewObjectForEntityForName("Livro", inManagedObjectContext: self.contexto!)
+
+		livroEntidade.setValue(tituloLivro, forKey: "titulo")
+		livroEntidade.setValue(autoresLivro, forKey: "autores")
+		livroEntidade.setValue(UIImagePNGRepresentation(capaLivro), forKey: "capa")
+
+		entidade.insert(livroEntidade)
+
+		return entidade
+	}*/
 
 	override func viewWillDisappear(animated: Bool) {
 		delegate.setLivros(livros)

@@ -7,19 +7,35 @@
 //
 
 import UIKit
+import CoreData
 
 class ListaLivros_TableViewController: UITableViewController, Adicionar_ViewDelegate {
 
-	var listaLivros:[Livro]!
+	var listaLivros:[Livro] = []
+	var contexto:NSManagedObjectContext? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
 		title = "Livros"
 
-		/*if (listaLivros != nil) {
-			print(listaLivros!)
-		}*/
+		self.contexto = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+
+		let secaoEntidade = NSEntityDescription.entityForName("Secao", inManagedObjectContext: self.contexto!)
+		let peticao = secaoEntidade?.managedObjectModel.fetchRequestTemplateForName("petSecoes")
+		do {
+			let secoesEntidade = try self.contexto?.executeFetchRequest(peticao!)
+			for secaoEntidade2 in secoesEntidade! {
+				let livro = secaoEntidade2.valueForKey("tem") as! NSObject
+				let titulo = livro.valueForKey("titulo") as! String
+				let autores = livro.valueForKey("autores") as! String
+				let capa = UIImage(data: livro.valueForKey("capa") as! NSData)
+				listaLivros.append(Livro(Titulo: titulo, Autores: autores, Capa: capa!))
+			}
+		}
+		catch _ {
+			
+		}
     }
 
     override func didReceiveMemoryWarning() {
@@ -32,7 +48,7 @@ class ListaLivros_TableViewController: UITableViewController, Adicionar_ViewDele
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		if (listaLivros != nil) {
+		if (!listaLivros.isEmpty) {
 			return listaLivros.count
 		}
 		else {
@@ -55,7 +71,7 @@ class ListaLivros_TableViewController: UITableViewController, Adicionar_ViewDele
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
 		if (segue.identifier == "segueAdicionar") {
 			let viewAdicionar:Adicionar_ViewController = segue.destinationViewController as! Adicionar_ViewController
-			if (listaLivros != nil) {
+			if (!listaLivros.isEmpty) {
 				viewAdicionar.livros = listaLivros
 			}
 			viewAdicionar.delegate = self

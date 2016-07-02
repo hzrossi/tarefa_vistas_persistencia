@@ -7,12 +7,13 @@
 //
 
 import UIKit
+import CoreData
 
 class Detalhes_ViewController: UIViewController {
 
 
 	var titulo:String!
-	var autores:[String] = []
+	var autores:String!
 	var capa:UIImage!
 
 	@IBOutlet weak var txtDados: UITextView!
@@ -21,11 +22,7 @@ class Detalhes_ViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
-		var texto = "Titulo: " + titulo + "\nAutores:"
-
-		for autor in autores {
-			texto += "\n\t" + autor
-		}
+		let texto = "Titulo: " + titulo + "\nAutores: " + autores
 
 		txtDados.text = texto
 		imgCapa.image = capa

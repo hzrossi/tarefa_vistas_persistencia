@@ -10,15 +10,16 @@
 
 import Foundation
 import UIKit
+import CoreData
 
 struct Livro {
 	var titulo:String
-	var autores:[String]
+	var autores:String
 	var capa:UIImage
 
-	init(Titulo:String, Autores:[String], Capa:UIImage) {
-	self.titulo = Titulo
-	self.autores = Autores
-	self.capa = Capa
+	init(Titulo:String, Autores:String, Capa:UIImage) {
+		self.titulo = Titulo
+		self.autores = Autores
+		self.capa = Capa
 	}
 }

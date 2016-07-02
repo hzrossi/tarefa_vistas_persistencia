@@ -304,6 +304,7 @@
 				1D2AC05A1D147EAF006B2B92 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
